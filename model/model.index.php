@@ -10,7 +10,12 @@ class IndexModel extends AgentModel
         	$sqltotal = "select id userid,user_name username FROM user_admin  WHERE 1=1 AND user_name= '{$pData['username']}' AND user_pwd= '{$newPwd}' ";
         	$ret = $this->mysqlQuery($sqltotal, "all");
         	if(count($ret) === 1){
-        		return to_success($ret[0]);
+                //生成token
+                $nowTime = NOW;
+                $randNum = rand(1, 99999);
+                $token = md5((string)$ret[0]['userid'].$ret[0]['username'].$nowTime.(string)randNum);
+                // return to_success($ret[0]);
+        		return to_success(array('token'=>'heheheh'));
         	}else{
         		return to_error('用户名或密码错误。');
         	}
@@ -19,5 +24,17 @@ class IndexModel extends AgentModel
         }
         // return $res;
     }
+
+    //获取管理员信息
+    public function getAdminInfo(){
+        // $pData = getData();
+        // $sqltotal = "select id userid,user_name username FROM user_admin  WHERE 1=1 AND user_name= '{$pData['token']}'";
+        //     $ret = $this->mysqlQuery($sqltotal, "all");
+        // $ret = $this->mysqlQuery($sqltotal, "all");
+    }
+
+    // private function(uData){
+    //     //登录用户入库
+    // }
 
 }

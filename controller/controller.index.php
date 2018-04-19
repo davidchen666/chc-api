@@ -21,6 +21,10 @@ class IndexController extends Controller
         echo $this->model->verifyLogin();
     }
 
+    function getAdminInfo(){
+        echo $this->model->getAdminInfo();
+    }
+
 }
 
 ?>
