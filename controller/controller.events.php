@@ -24,9 +24,23 @@ class EventsController extends Controller
     {
         echo $this->model->addMSignUp();
     }
+
+    //路演报名
     function addRSignUp()
     {
         echo $this->model->addRSignUp();
+    }
+
+    /*
+    ###########################################
+    ############## 后台管理接口 ################
+    ###########################################
+    */
+    //获取会议列表
+    function getEventsList()
+    {
+        //先验证用户的token值，后续加上
+        echo $this->model->getEventsList();
     }
     
 }

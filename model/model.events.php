@@ -1,6 +1,7 @@
 <?php
 class EventsModel extends AgentModel
 {
+    //报名
     public function addMSignUp(){
     	$pData = getData();
     	if(!$pData || !$pData['uData']){
@@ -38,6 +39,7 @@ class EventsModel extends AgentModel
         return to_success($res);
     }
 
+    //路演报名
     public function addRSignUp(){
     	$pData = getData();
     	if(!$pData){
@@ -58,5 +60,14 @@ class EventsModel extends AgentModel
         $res['cid'] = $cid;
         return to_success($res);
     }
+
+    //获取会议列表-admin
+    public function getEventsList(){
+        // $pData = getData();
+        $sql = "SELECT * FROM events_list order by 1 desc";
+        $res['items'] = $this->mysqlQuery($sql, "all");
+        return to_success($res);
+    }
+
 
 }

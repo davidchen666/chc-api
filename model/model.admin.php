@@ -1,6 +1,6 @@
 <?php
 
-class IndexModel extends AgentModel
+class AdminModel extends AgentModel
 {
     public function verifyLogin(){
         $pData = getData();

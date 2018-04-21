@@ -18,12 +18,15 @@ class IndexController extends Controller
     }
 
     function verifyLogin(){
-        echo $this->model->verifyLogin();
+        // echo $this->model->verifyLogin();
     }
 
     function getAdminInfo(){
         echo $this->model->getAdminInfo();
     }
+    // function getEventsList(){
+    //     echo 123;
+    // }
 
 }
 
