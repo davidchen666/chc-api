@@ -63,11 +63,33 @@ class EventsModel extends AgentModel
 
     //获取会议列表-admin
     public function getEventsList(){
-        // $pData = getData();
-        $sql = "SELECT * FROM events_list order by 1 desc";
+        $pData = getData();
+        $filter = '';
+        //当前的页码
+        $currentPage = $pData['currentPage'] ? (int)$pData['currentPage'] : 1;
+        //每页显示的最大条数
+        $pageSize = $pData['pageSize'] ? (int)$pData['pageSize'] : 10;
+        //搜索条件
+        if($pData['eventStatus']){
+        	$filter .= " AND events_state='{$pData['eventStatus']}' ";
+        }
+        if($pData['searchVal']){
+        	$filter .= " AND (events_id like '%{$pData['searchVal']}%' OR events_name like '%{$pData['searchVal']}%' OR events_date like '%{$pData['searchVal']}%' OR events_city like '%{$pData['searchVal']}%' OR events_url like '%{$pData['searchVal']}%') ";
+        }
+        //总条数
+        $res['page']['total'] = $this->__getEventsCount($filter);
+        //分页查询
+        $pageFilter .= " LIMIT " . ($currentPage-1) * $pageSize . "," . $pageSize;
+        $sql = "SELECT * FROM events_list WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
+        $res['sql'] = $sql;
         $res['items'] = $this->mysqlQuery($sql, "all");
         return to_success($res);
     }
 
+    private function __getEventsCount($filter){
+    	$sql = "SELECT COUNT(*) total FROM events_list WHERE 1=1 {$filter}";
+        $res = $this->mysqlQuery($sql, "all");
+        return $res[0]['total'];
+    }
 
 }
