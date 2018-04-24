@@ -81,10 +81,14 @@ class EventsModel extends AgentModel
         //分页查询
         $pageFilter .= " LIMIT " . ($currentPage-1) * $pageSize . "," . $pageSize;
         $sql = "SELECT * FROM events_list WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
-        $res['sql'] = $sql;
+        // $res['sql'] = $sql;
         $res['items'] = $this->mysqlQuery($sql, "all");
         return to_success($res);
     }
+
+    /*###########################################################
+      #################### PRIVATE METHODS ######################
+    */###########################################################
 
     private function __getEventsCount($filter){
     	$sql = "SELECT COUNT(*) total FROM events_list WHERE 1=1 {$filter}";
