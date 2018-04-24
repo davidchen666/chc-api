@@ -21,8 +21,15 @@ class AdminController extends Controller
         echo $this->model->verifyLogin();
     }
 
+    //验证token
+    //获取管理员信息
     function getAdminInfo(){
         echo $this->model->getAdminInfo();
+    }
+
+    //获取管理员列表
+    function getAdminList(){
+        echo $this->model->getAdminList();
     }
 
 }
