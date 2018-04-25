@@ -147,16 +147,12 @@ class AdminModel extends AgentModel
 
     //删除管理员
     public function delAdmin(){
-        $pData = getData();
-        //验证数据
-        if(!$pData['password'] && strlen($pData['username']) < 6){
-            return to_error('操作失败，密码不能为空且不能至少6位。');
-        }
+        $pData = getData();    
         //查看用户是否存在
-        $filter = " AND user_name = '{$pData['username']}' AND user_id='{$pData['user_id']}' ";
-        if($this->__getAdminCount($filter) === 0){
+        $filter = " user_name = '{$pData['username']}' AND user_id='{$pData['userid']}' ";
+        if($this->__getAdminCount(' AND '.$filter) === 0){
             return to_error('操作失败！该用户不存在。');
-        }else if($this->__getAdminCount($filter) > 1){
+        }else if($this->__getAdminCount(' AND '.$filter) > 1){
             return to_error('操作失败！非法用户，存在多个该用户名用户名');
         }
         $arrData = array(

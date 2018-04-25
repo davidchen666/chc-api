@@ -50,6 +50,12 @@ class AdminController extends Controller
     function editAdminPwd(){
         echo $this->model->editAdminPwd();
     }
+    
+    //验证token
+    //删除管理员
+    function delAdmin(){
+        echo $this->model->delAdmin();
+    }
 
 }
 
