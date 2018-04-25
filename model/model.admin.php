@@ -6,7 +6,8 @@ class AdminModel extends AgentModel
         $pData = getData();
         // $res = $this->mysqlQuery($sql, "all");
         if($pData['username'] && $pData['password']){
-        	$newPwd = md5(md5($pData['password'].'chc'));
+            // $newPwd = md5(md5($pData['password'].'chc'));
+        	$newPwd = $this->__encodePassword($pData['password']);
         	$sqltotal = "select user_id userid,user_name username FROM user_admin  WHERE 1=1 AND user_name= '{$pData['username']}' AND user_pwd= '{$newPwd}' ";
         	$ret = $this->mysqlQuery($sqltotal, "all");
         	if(count($ret) === 1){
@@ -49,10 +50,9 @@ class AdminModel extends AgentModel
         $currentPage = $pData['currentPage'] ? (int)$pData['currentPage'] : 1;
         //每页显示的最大条数
         $pageSize = $pData['pageSize'] ? (int)$pData['pageSize'] : 10;
-        //搜索条件
         //user_state=-4表示已删除的用户
         $filter = 'AND user_state <> -4 ';
-
+        //搜索条件
         if($pData['status']){
             $filter .= " AND user_state='{$pData['status']}' ";
         }
@@ -63,15 +63,116 @@ class AdminModel extends AgentModel
         $res['page']['total'] = $this->__getAdminCount($filter);
         //分页查询
         $pageFilter .= " LIMIT " . ($currentPage-1) * $pageSize . "," . $pageSize;
-        $sql = "SELECT user_id, user_name, user_state, user_mobile, user_mail, user_realName, c_date, u_date FROM user_admin WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
+        $sql = "SELECT user_id, user_name, user_state, user_mobile, user_mail, user_realName, user_remark, c_date, u_date FROM user_admin WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
         $res['sql'] = $sql;
         $res['items'] = $this->mysqlQuery($sql, "all");
         return to_success($res);
     }
 
+    //添加管理员
+    public function addAdmin(){
+        $pData = getData();
+        //验证数据
+        if(!$pData['username'] && strlen($pData['username']) < 4){
+            return to_error('用户名不能为空且至少4位。');
+        }
+        if(!$pData['password'] && strlen($pData['username']) < 6){
+            return to_error('密码不能为空且不能至少6位。');
+        }
+        //查看用户名是否已经重复
+        $filter = " AND user_name = '{$pData['username']}' ";
+        if($this->__getAdminCount($filter) > 0){
+            return to_error('该用户名已重复，请更换用户名。');
+        }
+        $arrData = array(
+            "user_name" => $pData['username'],
+            "user_pwd" => $this->__encodePassword($pData['password']),
+            "user_state" => 1,
+            "user_realName" => $pData['realname'],
+            "user_mobile" => $pData['mobile'],
+            "user_mail" => $pData['email'],
+            "user_remark" => $pData['remark'],
+            "c_date" => NOW,
+            "u_date" => NOW
+        );
+        return to_success($this->mysqlInsert("user_admin", $arrData, 'single', true));
+    }
+
+    //编辑管理员信息
+    public function editAdmin(){
+        $pData = getData();
+        //验证数据
+        // if(!$pData['username'] && strlen($pData['username']) < 4){
+        //     return to_error('操作失败,用户名不能为空且至少4位。');
+        // }
+        //查看用户是否存在
+        $filter = " user_name = '{$pData['username']}' AND user_id='{$pData['userid']}' ";
+        if($this->__getAdminCount(' AND '.$filter) === 0){
+            return to_error('操作失败！该用户不存在。');
+        }else if($this->__getAdminCount(' AND '.$filter) > 1){
+            return to_error('操作失败！非法用户，存在多个该用户名用户');
+        }
+        $arrData = array(
+            "user_state" => 1,
+            "user_realName" => $pData['realname'],
+            "user_mobile" => $pData['mobile'],
+            "user_mail" => $pData['email'],
+            "user_state" => $pData['state'],
+            "user_remark" => $pData['remark'],
+            "u_date" => NOW
+        );
+        return to_success($this->mysqlEdit("user_admin", $arrData, $filter));
+    }
+
+    //重置密码
+    public function editAdminPwd(){
+        $pData = getData();
+        //验证数据
+        if(!$pData['password'] && strlen($pData['username']) < 6){
+            return to_error('操作失败，密码不能为空且不能至少6位。');
+        }
+        //查看用户是否存在
+        $filter = " user_name = '{$pData['username']}' AND user_id='{$pData['userid']}' ";
+        if($this->__getAdminCount(' AND '.$filter) === 0){
+            return to_error('操作失败！该用户不存在。');
+        }else if($this->__getAdminCount(' AND '.$filter) > 1){
+            return to_error('操作失败！非法用户，存在多个该用户名用户名');
+        }
+        $arrData = array(
+            "user_pwd" => $this->__encodePassword($pData['password']),
+            "u_date" => NOW
+        );
+        return to_success($this->mysqlEdit("user_admin", $arrData, $filter));
+    }
+
+    //删除管理员
+    public function delAdmin(){
+        $pData = getData();
+        //验证数据
+        if(!$pData['password'] && strlen($pData['username']) < 6){
+            return to_error('操作失败，密码不能为空且不能至少6位。');
+        }
+        //查看用户是否存在
+        $filter = " AND user_name = '{$pData['username']}' AND user_id='{$pData['user_id']}' ";
+        if($this->__getAdminCount($filter) === 0){
+            return to_error('操作失败！该用户不存在。');
+        }else if($this->__getAdminCount($filter) > 1){
+            return to_error('操作失败！非法用户，存在多个该用户名用户名');
+        }
+        $arrData = array(
+            "user_state" => -4,
+            "u_date" => NOW
+        );
+        return to_success($this->mysqlEdit("user_admin", $arrData, $filter));
+    }
     /*###########################################################
       #################### PRIVATE METHODS ######################
     */###########################################################
+
+    //加密生成新的密码
+    private function __encodePassword($pwd){
+        return md5(md5($pwd.'chc'));
+    }
 
     //存储用户的登录token
     private function __saveLogin($uid,$token,$nowTime){
@@ -81,16 +182,16 @@ class AdminModel extends AgentModel
             "user_token" => $token,
             "login_state" => 1,
             "c_date" => $nowTime,
-            "u_date" => $nowTime,
+            "u_date" => $nowTime
         );
         return $this->mysqlInsert("user_login", $arrData, 'single', true);
     }
 
     //获取admin总数目
-    public function __getAdminCount($filter){
+    private function __getAdminCount($filter){
         $sql = "SELECT COUNT(*) total FROM user_admin WHERE 1=1 {$filter}";
         $res = $this->mysqlQuery($sql, "all");
-        return $res[0]['total'];
+        return (int)$res[0]['total'];
     }
 
 }

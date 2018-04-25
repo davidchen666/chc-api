@@ -33,6 +33,24 @@ class AdminController extends Controller
         echo $this->model->getAdminList();
     }
 
+    //验证token
+    //添加管理员
+    function addAdmin(){
+        echo $this->model->addAdmin();
+    }
+    
+    //验证token
+    //添加管理员
+    function editAdmin(){
+        echo $this->model->editAdmin();
+    }
+    
+    //验证token
+    //重置密码
+    function editAdminPwd(){
+        echo $this->model->editAdminPwd();
+    }
+
 }
 
 ?>
