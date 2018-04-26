@@ -42,7 +42,6 @@ class EventsController extends Controller
         //先验证用户的token值，后续加上
         echo $this->model->getEventsList();
     }
-    
 }
 
 ?>

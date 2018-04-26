@@ -19,7 +19,7 @@ define('MODEL_PATH', ROOT_PATH . MODEL . DS);
 define('CONTROLLER_PATH', ROOT_PATH . CONTROLLER . DS);
 define('VIEW_PATH', ROOT_PATH . VIEW . DS);
 
-define('UPLOAD_PATH', ROOT_PATH . '/public/uploads'); //接受上传目录    //站点配置
+define('UPLOAD_PATH', ROOT_PATH . '/uploads'); //接受上传目录    //站点配置
 //	define('WEBSITE','http://localhost');
 define('WEBSITE', $_SERVER['SERVER_ADDR']);
 define('WEBSITE_URL', '');
@@ -27,7 +27,7 @@ define('WEBSITE_SOURCE_URL', WEBSITE_URL . 'public');
 define('WEBSITE_TITLE', 'MVC');
 //导出报表配置
 //define('EXPORT_PIC','http://203.156.255.148:81/chart.php');
-define('EXPORT_PIC', 'http://180.169.19.166/graph_api/chart.php');
+// define('EXPORT_PIC', 'http://180.169.19.166/graph_api/chart.php');
 //页面条数
 define("__PAGENUM__", 10);
 //session 前缀

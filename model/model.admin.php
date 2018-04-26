@@ -113,11 +113,10 @@ class AdminModel extends AgentModel
             return to_error('操作失败！非法用户，存在多个该用户名用户');
         }
         $arrData = array(
-            "user_state" => 1,
+            "user_state" => $pData['state'],
             "user_realName" => $pData['realname'],
             "user_mobile" => $pData['mobile'],
             "user_mail" => $pData['email'],
-            "user_state" => $pData['state'],
             "user_remark" => $pData['remark'],
             "u_date" => NOW
         );
