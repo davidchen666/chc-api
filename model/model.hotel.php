@@ -7,12 +7,16 @@ class HotelModel extends AgentModel
     public function getHotelList(){
         $pData = getData();
         $filter = '';
+        //单条
+        if($pData['hotelid']){
+             $filter .= " AND hotel_id='{$pData['hotelid']}' ";
+        }
         //当前的页码
         $currentPage = $pData['currentPage'] ? (int)$pData['currentPage'] : 1;
         //每页显示的最大条数
         $pageSize = $pData['pageSize'] ? (int)$pData['pageSize'] : 10;
         //user_state=-4表示已删除的
-        $filter = 'AND hotel_state <> -4 ';
+        $filter .= 'AND hotel_state <> -4 ';
         //搜索条件
         if($pData['status']){
             $filter .= " AND hotel_state='{$pData['status']}' ";
@@ -24,7 +28,7 @@ class HotelModel extends AgentModel
         $res['page']['total'] = $this->__getHotelCount($filter);
         //分页查询
         $pageFilter .= " LIMIT " . ($currentPage-1) * $pageSize . "," . $pageSize;
-        $sql = "SELECT hotel_id, hotel_name, hotel_state, hotel_info, hotel_pic, arrive_info, arrive_pic, c_date, u_date FROM events_hotel WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
+        $sql = "SELECT hotel_id, hotel_name, hotel_state, hotel_info, hotel_pic, arrive_info, arrive_pic, hotel_remark, c_date, u_date FROM events_hotel WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
         $res['sql'] = $sql;
         $res['items'] = $this->mysqlQuery($sql, "all");
         return to_success($res);
@@ -34,17 +38,17 @@ class HotelModel extends AgentModel
     public function addHotel(){
         $pData = getData();
         //验证数据
-        if(!$pData['hotelname']){
+        if(!$pData['hotel_name']){
             return to_error('酒店名称不能为空。');
         }
         $arrData = array(
-            "hotel_name" => $pData['hotelname'],
-            "hotel_state" => 1,
-            "hotel_info" => $pData['hotelinfo'],
-            "hotel_pic" => json_encode($pData['hotelpic']),
-            "arrive_info" => $pData['arriveinfo'],
-            "arrive_pic" => $pData['arrivepic'],
-            "hotel_remark" => $pData['remark'],
+            "hotel_name" => $pData['hotel_name'],
+            "hotel_state" => $pData['hotel_state'],
+            "hotel_info" => $pData['hotel_info'],
+            "hotel_pic" => json_encode($pData['hotel_pic']),
+            "arrive_info" => $pData['arrive_info'],
+            "arrive_pic" => $pData['arrive_pic'],
+            "hotel_remark" => $pData['hotel_remark'],
             "c_date" => NOW,
             "u_date" => NOW
         );
@@ -55,25 +59,24 @@ class HotelModel extends AgentModel
     public function editHotel(){
         $pData = getData();
         //验证数据
-        if(!$pData['hotelid']){
+        if(!$pData['hotel_id']){
             return to_error('操作失败,非法数据，不能获取酒店ID。');
         }
-        //查看用户是否存在
-        $filter = " hotel_id='{$pData['hotelid']}' ";
+        //查看酒店是否存在
+        $filter = " hotel_id='{$pData['hotel_id']}' ";
         if($this->__getHotelCount(' AND '.$filter) === 0){
             return to_error('操作失败！该酒店不存在。');
         }else if($this->__getHotelCount(' AND '.$filter) > 1){
             return to_error('操作失败！存在多个酒店。');
         }
         $arrData = array(
-            "hotel_name" => $pData['hotelname'],
-            "hotel_state" => $pData['state'],
-            "hotel_info" => $pData['hotelinfo'],
-            "hotel_pic" => json_encode($pData['hotelpic']),
-            "arrive_info" => $pData['arriveinfo'],
-            "arrive_pic" => $pData['arrivepic'],
-            "hotel_remark" => $pData['remark'],
-            "c_date" => NOW,
+            "hotel_name" => $pData['hotel_name'],
+            "hotel_state" => $pData['hotel_state'],
+            "hotel_info" => $pData['hotel_info'],
+            "hotel_pic" => json_encode($pData['hotel_pic']),
+            "arrive_info" => $pData['arrive_info'],
+            "arrive_pic" => $pData['arrive_pic'],
+            "hotel_remark" => $pData['hotel_remark'],
             "u_date" => NOW
         );
         return to_success($this->mysqlEdit("events_hotel", $arrData, $filter));
