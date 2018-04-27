@@ -79,6 +79,7 @@ class HotelModel extends AgentModel
             "hotel_remark" => $pData['hotel_remark'],
             "u_date" => NOW
         );
+        // var_dump($pData);//die();
         return to_success($this->mysqlEdit("events_hotel", $arrData, $filter));
     }
 
