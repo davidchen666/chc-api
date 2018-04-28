@@ -42,6 +42,13 @@ class EventsController extends Controller
         //先验证用户的token值，后续加上
         echo $this->model->getEventsList();
     }
+    
+    //获取会议报名列表
+    function getEventsRegisterList()
+    {
+        //先验证用户的token值，后续加上
+        echo $this->model->getEventsRegisterList();
+    }
 }
 
 ?>

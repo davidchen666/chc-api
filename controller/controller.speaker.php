@@ -1,16 +1,16 @@
 <?php
 /**
  * Copyright © 大猩猩
- * events api
+ * speaker api
  * Author 大猩猩
- * Create 18-02-22 14:34
+ * Create 18-04-28 11:31
  */
-class HotelController extends Controller
+class SpeakerController extends Controller
 {
     private $model;
     private $_api;
     private $title;
-    const M = "Hotel";
+    const M = "Speaker";
     const S = "Service";
 
     function __construct()
@@ -23,37 +23,37 @@ class HotelController extends Controller
     ############## 后台管理接口 ################
     ###########################################
     */
-    //获取酒店列表
-    function getHotelList()
+    //获取演讲嘉宾列表
+    function getSpeakerList()
     {
         //先验证用户的token值，后续加上
-        echo $this->model->getHotelList();
+        echo $this->model->getSpeakerList();
     }
 
-    //添加酒店
-    function addHotel()
+    //添加演讲嘉宾
+    function addSpeaker()
     {
         //先验证用户的token值，后续加上
-        echo $this->model->addHotel();
+        echo $this->model->addSpeaker();
     }
 
-    //修改酒店
-    function editHotel()
+    //修改演讲嘉宾
+    function editSpeaker()
     {
         //先验证用户的token值，后续加上
-        echo $this->model->editHotel();
+        echo $this->model->editSpeaker();
     }
 
-    //更改酒店状态
-    function editHotelState()
+    //更改演讲嘉宾状态
+    function editSpeakerState()
     {
         //先验证用户的token值，后续加上
-        echo $this->model->editHotelState();
+        echo $this->model->editSpeakerState();
     }
 
     //上传图片
     public function uploadFile(){
-        echo $this->service->uploadFile('hotel');
+        echo $this->service->uploadFile('speaker');
     }
 }
 

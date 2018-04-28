@@ -86,12 +86,51 @@ class EventsModel extends AgentModel
         return to_success($res);
     }
 
+
+    //获取会议报名列表-admin
+    public function getEventsRegisterList(){
+        $pData = getData();
+        $filter = '';
+        //单条
+        // if($pData['mediaid']){
+        //      $filter .= " AND media_id='{$pData['mediaid']}' ";
+        // }
+        //当前的页码
+        $currentPage = $pData['currentPage'] ? (int)$pData['currentPage'] : 1;
+        //每页显示的最大条数
+        $pageSize = $pData['pageSize'] ? (int)$pData['pageSize'] : 10;
+        //user_state=-4表示已删除的
+        // $filter .= 'AND media_state <> -4 ';
+        //搜索条件
+        if($pData['events_id']){
+            $filter .= " AND events_id='{$pData['events_id']}' ";
+        }
+        //com_id    events_id   com_name    com_Invoices_title  com_duty_num    com_phone   com_fax com_postal_addr com_postal_code com_field   com_from    c_date
+        if($pData['searchVal']){
+            $filter .= " AND (com_id like '%{$pData['searchVal']}%' OR events_id like '%{$pData['searchVal']}%' OR com_name like '%{$pData['searchVal']}%' OR com_Invoices_title like '%{$pData['searchVal']}%' OR com_phone like '%{$pData['searchVal']}%' OR com_fax like '%{$pData['searchVal']}%' OR com_postal_addr like '%{$pData['searchVal']}%' ) ";
+        }
+        //总条数
+        $res['page']['total'] = $this->__getEventsRegisterCount($filter);
+        //分页查询
+        $pageFilter .= " LIMIT " . ($currentPage-1) * $pageSize . "," . $pageSize;
+        $sql = "SELECT com_id,events_id,com_name,com_Invoices_title,com_duty_num,com_phone,com_fax com_postal_addr,com_postal_code,com_field,com_from,c_date FROM events_com_sign_up WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
+        // $res['sql'] = $sql;
+        $res['items'] = $this->mysqlQuery($sql, "all");
+        return to_success($res);
+    }
+
     /*###########################################################
       #################### PRIVATE METHODS ######################
     */###########################################################
 
     private function __getEventsCount($filter){
     	$sql = "SELECT COUNT(*) total FROM events_list WHERE 1=1 {$filter}";
+        $res = $this->mysqlQuery($sql, "all");
+        return $res[0]['total'];
+    }
+    
+    private function __getEventsRegisterCount($filter){
+        $sql = "SELECT COUNT(*) total FROM events_com_sign_up WHERE 1=1 {$filter}";
         $res = $this->mysqlQuery($sql, "all");
         return $res[0]['total'];
     }

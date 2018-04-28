@@ -74,12 +74,11 @@ class HotelModel extends AgentModel
             "hotel_state" => $pData['hotel_state'],
             "hotel_info" => $pData['hotel_info'],
             "hotel_pic" => json_encode($pData['hotel_pic']),
-            "arrive_info" => $pData['arrive_info'],
             "arrive_pic" => $pData['arrive_pic'],
+            "arrive_info" => $pData['arrive_info'],
             "hotel_remark" => $pData['hotel_remark'],
             "u_date" => NOW
         );
-        // var_dump($pData);//die();
         return to_success($this->mysqlEdit("events_hotel", $arrData, $filter));
     }
 
@@ -105,46 +104,6 @@ class HotelModel extends AgentModel
         return to_success($this->mysqlEdit("events_hotel", $arrData, $filter));
     }
 
-    //上传图片
-    public function uploadFile(){
-        $file = $_FILES['file'];
-        $name = $file['name'];
-        $type = $file['type'];
-        $size = $file['size'];
-        $tmp_name = $file['tmp_name'];
-        $url = dirname(dirname(__FILE__))."/uploads/hotel/";//文件路径
-        $tpname = substr(strrchr($name,'.'),1);//获取文件后缀
-        $pre_str = date("YmdHis",time()).'-'.rand(1,99999);
-        // $tmp_url = $url.$pre_str.$name;
-        //重新生成不包含中文的文件名称（要求不重合）
-        $name = $pre_str.'.'.$tpname;
-        $tmp_url = $url.$pre_str.$name;
-        // date("YmdHis",time())+rand(1,99999);
-        $types = array('jpg','png','jpeg','bmp','gif');
-        $filesize = 1024 * 1024 * 100;
-        if($size > $filesize){
-            //              echo "<script>alert('退出成功!');location.href='".$_SERVER["HTTP_REFERER"]."';</script>";
-            // echo "'文件过大!";
-            echo to_error("文件过大!");
-            exit;
-        }else if(!in_array($tpname,$types)){
-            // echo "文件类型不符合!";
-            echo to_error("文件类型不符合!");
-            exit;
-        }else if(!move_uploaded_file($tmp_name,$tmp_url)){
-            // echo "移动文件失败!";
-            var_dump($tmp_name,$tmp_url);
-            echo to_error("移动文件失败!(请检查文件名是否合法)");
-            exit;
-        }else{
-            move_uploaded_file($tmp_name,$tmp_url);
-            $size = round($size/1024/1024,2); //转换成Mb
-            $upload = array('size' => $size, 'url' => $tmp_url, 'name' => $name,'newname'=>$pre_str.$name, 'type' => $tpname);
-            // var_dump($upload);
-            // return $upload;
-            echo to_success($upload);
-        }
-    }
     /*###########################################################
       #################### PRIVATE METHODS ######################
     */###########################################################

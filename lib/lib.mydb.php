@@ -189,14 +189,15 @@ class MyDb{
 		$i=0;
 		foreach($arr as $key => $value){
 			$value=$this->escape_string($value).'';
-			if($value!=''){
+			//此处过滤出空字符串数据，如果不需要则注释掉
+			// if($value!=''){ 
 				if($i==0){
 					$sql.=" set $key ='$value'";
 				}else{
 					$sql.=",$key ='$value'";
 				}
 				$i++;
-			}
+			// }
 		}
 		$w = '';
 		if(is_array($where) && !empty($where)) {
