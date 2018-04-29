@@ -28,7 +28,7 @@ class HotelModel extends AgentModel
         $res['page']['total'] = $this->__getHotelCount($filter);
         //分页查询
         $pageFilter .= " LIMIT " . ($currentPage-1) * $pageSize . "," . $pageSize;
-        $sql = "SELECT hotel_id, hotel_name, hotel_state, hotel_info, hotel_pic, arrive_info, arrive_pic, hotel_remark, c_date, u_date FROM events_hotel WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
+        $sql = "SELECT hotel_id, hotel_name, hotel_state, hotel_info, hotel_pic, arrive_info, arrive_pic, hotel_remark, create_date, update_date FROM events_hotel WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
         $res['sql'] = $sql;
         $res['items'] = $this->mysqlQuery($sql, "all");
         return to_success($res);
@@ -49,8 +49,8 @@ class HotelModel extends AgentModel
             "arrive_info" => $pData['arrive_info'],
             "arrive_pic" => $pData['arrive_pic'],
             "hotel_remark" => $pData['hotel_remark'],
-            "c_date" => NOW,
-            "u_date" => NOW
+            "create_date" => NOW,
+            "update_date" => NOW
         );
         return to_success($this->mysqlInsert("events_hotel", $arrData, 'single', true));
     }
@@ -77,7 +77,7 @@ class HotelModel extends AgentModel
             "arrive_pic" => $pData['arrive_pic'],
             "arrive_info" => $pData['arrive_info'],
             "hotel_remark" => $pData['hotel_remark'],
-            "u_date" => NOW
+            "update_date" => NOW
         );
         return to_success($this->mysqlEdit("events_hotel", $arrData, $filter));
     }
@@ -99,7 +99,7 @@ class HotelModel extends AgentModel
         }
         $arrData = array(
             "hotel_state" => $pData['state'],
-            "u_date" => NOW
+            "update_date" => NOW
         );
         return to_success($this->mysqlEdit("events_hotel", $arrData, $filter));
     }

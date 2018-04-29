@@ -105,18 +105,55 @@ class EventsModel extends AgentModel
         if($pData['events_id']){
             $filter .= " AND events_id='{$pData['events_id']}' ";
         }
-        //com_id    events_id   com_name    com_Invoices_title  com_duty_num    com_phone   com_fax com_postal_addr com_postal_code com_field   com_from    c_date
+        //com_id    events_id   com_name    com_Invoices_title  com_duty_num    com_phone   com_fax com_postal_addr com_postal_code com_field   com_from    create_date
         if($pData['searchVal']){
-            $filter .= " AND (com_id like '%{$pData['searchVal']}%' OR events_id like '%{$pData['searchVal']}%' OR com_name like '%{$pData['searchVal']}%' OR com_Invoices_title like '%{$pData['searchVal']}%' OR com_phone like '%{$pData['searchVal']}%' OR com_fax like '%{$pData['searchVal']}%' OR com_postal_addr like '%{$pData['searchVal']}%' ) ";
+            $filter .= " AND (com_id like '%{$pData['searchVal']}%' OR events_id like '%{$pData['searchVal']}%' OR com_name like '%{$pData['searchVal']}%' OR com_Invoices_title like '%{$pData['searchVal']}%' OR com_phone like '%{$pData['searchVal']}%' OR com_fax like '%{$pData['searchVal']}%' OR com_postal_addr like '%{$pData['searchVal']}%' OR pay_method like '%{$pData['searchVal']}%' OR remark like '%{$pData['searchVal']}%' ) ";
         }
         //总条数
         $res['page']['total'] = $this->__getEventsRegisterCount($filter);
         //分页查询
         $pageFilter .= " LIMIT " . ($currentPage-1) * $pageSize . "," . $pageSize;
-        $sql = "SELECT com_id,events_id,com_name,com_Invoices_title,com_duty_num,com_phone,com_fax com_postal_addr,com_postal_code,com_field,com_from,c_date FROM events_com_sign_up WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
-        // $res['sql'] = $sql;
+        $sql = "SELECT aa.com_id,aa.events_id,aa.com_name,aa.com_Invoices_title,aa.com_duty_num,aa.com_phone,aa.com_fax, aa.com_postal_addr,aa.com_postal_code,aa.com_field,aa.com_from,aa.create_date,aa.update_date, aa.pay_price,aa.pay_method,aa.invoice_state,aa.remark,
+            bb.events_name 
+            FROM events_com_sign_up AS aa 
+            LEFT JOIN events_list AS bb
+            ON aa.events_id = bb.events_id
+            WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
+        $res['sql'] = $sql;
         $res['items'] = $this->mysqlQuery($sql, "all");
+        foreach ($res['items'] as $key => $value) {
+             $res['items'][$key]['users']= $this->__getEventsRegisterUsers($value['com_id']);
+        }
         return to_success($res);
+    }
+
+    //更改会议报名信息-> 报名费用，发票状态，付费渠道，备注信息
+    public function editEventsRegister(){
+        $pData = getData();
+        $rightStateArr = array('1','-1');
+        //查看报名是否存在
+        $filter = " com_id='{$pData['com_id']}' ";
+        if($this->__getEventsRegisterCount(' AND '.$filter) === 0){
+            return to_error('操作失败！该报名ID不存在。');
+        }else if($this->__getEventsRegisterCount(' AND '.$filter) > 1){
+            return to_error('操作失败！数据有误。');
+        }
+        //检查用户状态值是否合法
+        if(!in_array($pData['invoice_state'], $rightStateArr)){
+            return to_error('操作失败！非法参数--发票状态。');
+        }
+        //判断金额是不是数字
+        if($pData['pay_price'] && !is_numeric($pData['pay_price'])){
+            return to_error('操作失败！付费价格参数不正确。');
+        }
+        $arrData = array(
+            "pay_price" => $pData['pay_price'],
+            "pay_method" => $pData['pay_method'],
+            "invoice_state" => $pData['invoice_state'],
+            "remark" => $pData['remark'],
+            "update_date" => NOW
+        );
+        return to_success($this->mysqlEdit("events_com_sign_up", $arrData, $filter,''));
     }
 
     /*###########################################################
@@ -133,6 +170,11 @@ class EventsModel extends AgentModel
         $sql = "SELECT COUNT(*) total FROM events_com_sign_up WHERE 1=1 {$filter}";
         $res = $this->mysqlQuery($sql, "all");
         return $res[0]['total'];
+    }
+
+    private function __getEventsRegisterUsers($com_id){
+        $sql = "SELECT *  FROM events_user_sign_up WHERE com_id='{$com_id}' ";
+        return $this->mysqlQuery($sql, "all");
     }
 
 }

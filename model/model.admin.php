@@ -33,7 +33,7 @@ class AdminModel extends AgentModel
     //获取管理员信息
     public function getAdminInfo(){
         $pData = getData();
-        $sql = "SELECT user_id,user_name FROM user_admin where user_id in(select user_id from user_login where user_token='{$pData['token']}' AND login_state=1)";
+        $sql = "SELECT user_id,user_name FROM user_admin where user_id in(select user_id from user_admin_token where user_token='{$pData['token']}' AND login_state=1)";
         $ret = $this->mysqlQuery($sql, "all");
         if(count($ret) === 1){
         	return to_success($ret[0]);
@@ -63,7 +63,7 @@ class AdminModel extends AgentModel
         $res['page']['total'] = $this->__getAdminCount($filter);
         //分页查询
         $pageFilter .= " LIMIT " . ($currentPage-1) * $pageSize . "," . $pageSize;
-        $sql = "SELECT user_id, user_name, user_state, user_mobile, user_mail, user_realName, user_remark, c_date, u_date FROM user_admin WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
+        $sql = "SELECT user_id, user_name, user_state, user_mobile, user_mail, user_realName, user_remark, create_date, update_date FROM user_admin WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
         $res['sql'] = $sql;
         $res['items'] = $this->mysqlQuery($sql, "all");
         return to_success($res);
@@ -92,8 +92,8 @@ class AdminModel extends AgentModel
             "user_mobile" => $pData['mobile'],
             "user_mail" => $pData['email'],
             "user_remark" => $pData['remark'],
-            "c_date" => NOW,
-            "u_date" => NOW
+            "create_date" => NOW,
+            "update_date" => NOW
         );
         return to_success($this->mysqlInsert("user_admin", $arrData, 'single', true));
     }
@@ -118,7 +118,7 @@ class AdminModel extends AgentModel
             "user_mobile" => $pData['mobile'],
             "user_mail" => $pData['email'],
             "user_remark" => $pData['remark'],
-            "u_date" => NOW
+            "update_date" => NOW
         );
         return to_success($this->mysqlEdit("user_admin", $arrData, $filter));
     }
@@ -139,7 +139,7 @@ class AdminModel extends AgentModel
         }
         $arrData = array(
             "user_pwd" => $this->__encodePassword($pData['password']),
-            "u_date" => NOW
+            "update_date" => NOW
         );
         return to_success($this->mysqlEdit("user_admin", $arrData, $filter));
     }
@@ -156,7 +156,7 @@ class AdminModel extends AgentModel
         }
         $arrData = array(
             "user_state" => -4,
-            "u_date" => NOW
+            "update_date" => NOW
         );
         return to_success($this->mysqlEdit("user_admin", $arrData, $filter));
     }
@@ -176,10 +176,10 @@ class AdminModel extends AgentModel
             "user_id" => $uid,
             "user_token" => $token,
             "login_state" => 1,
-            "c_date" => $nowTime,
-            "u_date" => $nowTime
+            "create_date" => $nowTime,
+            "update_date" => $nowTime
         );
-        return $this->mysqlInsert("user_login", $arrData, 'single', true);
+        return $this->mysqlInsert("user_admin_token", $arrData, 'single', true);
     }
 
     //获取admin总数目

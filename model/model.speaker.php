@@ -28,13 +28,13 @@ class SpeakerModel extends AgentModel
         $res['page']['total'] = $this->__getSpeakerCount($filter);
         //分页查询
         $pageFilter .= " LIMIT " . ($currentPage-1) * $pageSize . "," . $pageSize;
-        $sql = "SELECT speaker_id, speaker_name, speaker_pic, speaker_honor, speaker_identity, speaker_simple_intro, speaker_detail_intro, speaker_state, speaker_remark, c_date, u_date FROM events_speaker WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
+        $sql = "SELECT speaker_id, speaker_name, speaker_pic, speaker_honor, speaker_identity, speaker_simple_intro, speaker_detail_intro, speaker_state, speaker_remark, create_date, update_date FROM events_speaker WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
         // $res['sql'] = $sql;
         $res['items'] = $this->mysqlQuery($sql, "all");
         return to_success($res);
     }
 
-    //添加演讲嘉宾 speaker_id, speaker_name, speaker_pic, speaker_honor, speaker_identity, speaker_simple_intro, speaker_detail_intro, speaker_state, speaker_remark, c_date, u_date`
+    //添加演讲嘉宾 speaker_id, speaker_name, speaker_pic, speaker_honor, speaker_identity, speaker_simple_intro, speaker_detail_intro, speaker_state, speaker_remark, create_date, update_date`
     public function addSpeaker(){
         $pData = getData();
         //验证数据
@@ -50,8 +50,8 @@ class SpeakerModel extends AgentModel
             "speaker_detail_intro" => $pData['speaker_detail_intro'],
             "speaker_state" => $pData['speaker_state'],
             "speaker_remark" => $pData['speaker_remark'],
-            "c_date" => NOW,
-            "u_date" => NOW
+            "create_date" => NOW,
+            "update_date" => NOW
         );
         return to_success($this->mysqlInsert("events_speaker", $arrData, 'single', true));
     }
@@ -79,7 +79,7 @@ class SpeakerModel extends AgentModel
             "speaker_detail_intro" => $pData['speaker_detail_intro'],
             "speaker_state" => $pData['speaker_state'],
             "speaker_remark" => $pData['speaker_remark'],
-            "u_date" => NOW
+            "update_date" => NOW
         );
         return to_success($this->mysqlEdit("events_speaker", $arrData, $filter));
     }
@@ -101,9 +101,9 @@ class SpeakerModel extends AgentModel
         }
         $arrData = array(
             "speaker_state" => $pData['state'],
-            "u_date" => NOW
+            "update_date" => NOW
         );
-        return to_success($this->mysqlEdit("events_speaker", $arrData, $filter));
+        return to_success($this->mysqlEdit("events_speaker", $arrData, $filter,''));
     }
 
     /*###########################################################

@@ -21,7 +21,7 @@ class MediaModel extends AgentModel
         if($pData['status']){
             $filter .= " AND media_state='{$pData['status']}' ";
         }
-        //media_id  media_name  media_company   media_company_simple    media_intro  media_remark    media_state c_date  u_date
+        //media_id  media_name  media_company   media_company_simple    media_intro  media_remark    media_state create_date  update_date
         if($pData['searchVal']){
             $filter .= " AND (media_name like '%{$pData['searchVal']}%' OR media_company like '%{$pData['searchVal']}%' OR media_company_simple like '%{$pData['searchVal']}%' OR media_intro like '%{$pData['searchVal']}%' OR media_remark like '%{$pData['searchVal']}%' ) ";
         }
@@ -29,7 +29,7 @@ class MediaModel extends AgentModel
         $res['page']['total'] = $this->__getMediaCount($filter);
         //分页查询
         $pageFilter .= " LIMIT " . ($currentPage-1) * $pageSize . "," . $pageSize;
-        $sql = "SELECT media_id, media_name, media_company, media_company_simple, media_intro, media_remark, media_pic, media_state, c_date, u_date FROM events_media WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
+        $sql = "SELECT media_id, media_name, media_company, media_company_simple, media_intro, media_remark, media_pic, media_state, create_date, update_date FROM events_media WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
         // $res['sql'] = $sql;
         $res['items'] = $this->mysqlQuery($sql, "all");
         return to_success($res);
@@ -50,8 +50,8 @@ class MediaModel extends AgentModel
             "media_remark" => $pData['media_remark'],
             "media_pic" => $pData['media_pic'],
             "media_state" => $pData['media_state'],
-            "c_date" => NOW,
-            "u_date" => NOW
+            "create_date" => NOW,
+            "update_date" => NOW
         );
         return to_success($this->mysqlInsert("events_media", $arrData, 'single', true));
     }
@@ -78,7 +78,7 @@ class MediaModel extends AgentModel
             "media_remark" => $pData['media_remark'],
             "media_pic" => $pData['media_pic'],
             "media_state" => $pData['media_state'],
-            "u_date" => NOW
+            "update_date" => NOW
         );
         return to_success($this->mysqlEdit("events_media", $arrData, $filter));
     }
@@ -100,7 +100,7 @@ class MediaModel extends AgentModel
         }
         $arrData = array(
             "media_state" => $pData['state'],
-            "u_date" => NOW
+            "update_date" => NOW
         );
         return to_success($this->mysqlEdit("events_media", $arrData, $filter));
     }

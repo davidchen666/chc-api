@@ -212,6 +212,7 @@ class MyDb{
 		if($showsql){
 			echo $sql;
 		}else{
+			// echo $sql;die();
 			return $this->query($sql);
 		}
 	}

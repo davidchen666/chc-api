@@ -49,6 +49,13 @@ class EventsController extends Controller
         //先验证用户的token值，后续加上
         echo $this->model->getEventsRegisterList();
     }
+
+    //更改会议报名信息-> 报名费用，发票状态，付费渠道，备注信息
+    function editEventsRegister()
+    {
+        //先验证用户的token值，后续加上
+        echo $this->model->editEventsRegister();
+    }
 }
 
 ?>
