@@ -65,6 +65,10 @@ class EventsModel extends AgentModel
     public function getEventsList(){
         $pData = getData();
         $filter = '';
+        //单条
+        if($pData['eventsid']){
+             $filter .= " AND events_id='{$pData['eventsid']}' ";
+        }
         //当前的页码
         $currentPage = $pData['currentPage'] ? (int)$pData['currentPage'] : 1;
         //每页显示的最大条数
@@ -86,6 +90,115 @@ class EventsModel extends AgentModel
         return to_success($res);
     }
 
+    //添加会议信息
+    public function addEvents(){
+        $pData = getData();
+        //验证数据
+        if(!$pData['events_name']){
+            return to_error('会议标题不能为空。');
+        }
+        $arrData = array(
+            "events_name" => $pData['events_name'],
+            "events_begin_date" => $pData['events_begin_date'],
+            "events_end_date" => $pData['events_end_date'],
+            "events_city" => $pData['events_city'],
+            "events_pic" => $pData['events_pic'],
+            "events_menu" => json_encode($pData['events_menu']),
+            "events_state" => $pData['events_state'],
+            "events_remark" => $pData['events_remark'],
+            "create_date" => NOW,
+            "update_date" => NOW
+        );
+        $id = $this->mysqlInsert("events_list", $arrData, 'single', true);
+        if($id){
+            $id_info = $this->mysqlInsert("events_list_detail", array("events_id" => $id), 'single', true);
+            return to_success(array('events_id'=>$id));
+        }else {
+            return to_error('添加失败');
+        }
+        
+    }
+
+    //编辑会议信息
+    public function editEvents(){
+        $pData = getData();
+        //验证数据
+        if(!$pData['events_id']){
+            return to_error('操作失败,非法数据，不能获取ID。');
+        }
+        //查看会议id是否存在
+        $filter = " events_id='{$pData['events_id']}' ";
+        if($this->__getEventsCount(' AND '.$filter) === 0){
+            return to_error('操作失败！该会议id不存在。');
+        }else if($this->__getEventsCount(' AND '.$filter) > 1){
+            return to_error('操作失败！存在多个会议id');
+        }
+        $arrData = array(
+            "events_name" => $pData['events_name'],
+            "events_begin_date" => $pData['events_begin_date'],
+            "events_end_date" => $pData['events_end_date'],
+            "events_city" => $pData['events_city'],
+            "events_pic" => $pData['events_pic'],
+            "events_menu" => json_encode($pData['events_menu']),
+            "events_state" => $pData['events_state'],
+            "events_remark" => $pData['events_remark'],
+            "update_date" => NOW
+        );
+        return to_success($this->mysqlEdit("events_list", $arrData, $filter));
+    }
+
+    //获取会议详情-admin
+    public function getEventsInfo(){
+        $pData = getData();
+        $filter = '';
+        $query = '*';
+        $query = $pData['query'] ? 'events_id,'.$pData['query'] : '*';
+        //单条
+        if($pData['events_id']){
+             $filter .= " AND events_id='{$pData['events_id']}' ";
+        }else{
+            return '参数不正确！不能获取会议id。';
+        }
+        $sql = "SELECT {$query} FROM events_list_detail WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
+        // $res['sql'] = $sql;
+        $res['items'] = $this->mysqlQuery($sql, "all");
+        return to_success($res);
+    }
+
+    //编辑会议详情-admin
+    public function editEventsInfo(){
+        $pData = getData();
+        //验证数据
+        if(!$pData['events_id']){
+            return to_error('操作失败,非法数据，不能获取ID。');
+        }
+        //查看会议id是否存在
+        $filter = " events_id='{$pData['events_id']}' ";
+        if($this->__getEventsDetailCount(' AND '.$filter) === 0){
+            return to_error('操作失败！该会议id不存在。');
+        }else if($this->__getEventsDetailCount(' AND '.$filter) > 1){
+            return to_error('操作失败！存在多个会议id');
+        }
+        if($pData['query']){
+            $arrData = array();
+            $queryArr =  explode(",",$pData['query']);
+            foreach ($queryArr as $k => $v) {
+                $arrData[$v] = $pData[$v];
+            }
+            return to_success($this->mysqlEdit("events_list_detail", $arrData, $filter));
+        }else{
+            return to_error('不能获取query值');
+        }
+    }
+
+    //获取会议菜单列表-admin
+    public function getEventsMenuList(){
+        $pData = getData();
+        $sql = "SELECT * FROM events_menu_list";
+        // $res['sql'] = $sql;
+        $res['items'] = $this->mysqlQuery($sql, "all");
+        return to_success($res);
+    }
 
     //获取会议报名列表-admin
     public function getEventsRegisterList(){
@@ -162,6 +275,12 @@ class EventsModel extends AgentModel
 
     private function __getEventsCount($filter){
     	$sql = "SELECT COUNT(*) total FROM events_list WHERE 1=1 {$filter}";
+        $res = $this->mysqlQuery($sql, "all");
+        return $res[0]['total'];
+    }
+
+    private function __getEventsDetailCount($filter){
+        $sql = "SELECT COUNT(*) total FROM events_list_detail WHERE 1=1 {$filter}";
         $res = $this->mysqlQuery($sql, "all");
         return $res[0]['total'];
     }

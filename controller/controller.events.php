@@ -8,13 +8,16 @@
 class EventsController extends Controller
 {
     private $model;
+    private $service;
     private $_api;
     private $title;
     const M = "Events";
+    const S = "Service";
 
     function __construct()
     {
         $this->model = Model::instance(self::M);
+        $this->service = Model::instance(self::S);
     }
 
     /**
@@ -42,6 +45,41 @@ class EventsController extends Controller
         //先验证用户的token值，后续加上
         echo $this->model->getEventsList();
     }
+
+    //添加会议
+    function addEvents()
+    {
+        //先验证用户的token值，后续加上
+        echo $this->model->addEvents();
+    }
+
+    //编辑会议信息
+    function editEvents()
+    {
+        //先验证用户的token值，后续加上
+        echo $this->model->editEvents();
+    }
+
+    //获取会议详情
+    function getEventsInfo()
+    {
+        //先验证用户的token值，后续加上
+        echo $this->model->getEventsInfo();
+    }
+
+    //获取编辑会议详情
+    function editEventsInfo()
+    {
+        //先验证用户的token值，后续加上
+        echo $this->model->editEventsInfo();
+    }
+    
+    //获取会议菜单列表
+    function getEventsMenuList()
+    {
+        //先验证用户的token值，后续加上
+        echo $this->model->getEventsMenuList();
+    }
     
     //获取会议报名列表
     function getEventsRegisterList()
@@ -55,6 +93,10 @@ class EventsController extends Controller
     {
         //先验证用户的token值，后续加上
         echo $this->model->editEventsRegister();
+    }
+    //上传图片
+    public function uploadFile(){
+        echo $this->service->uploadFile('events');
     }
 }
 
