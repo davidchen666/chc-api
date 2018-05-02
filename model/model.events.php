@@ -19,7 +19,8 @@ class EventsModel extends AgentModel
             "com_postal_code" => "{$pData['com_postal_code']}",
             "com_field" => "{$pData['com_field']}",
             "com_from" => "{$pData['from']}",
-            "c_date" => "{$nowTime}"
+            "update_date" => "{$nowTime}",
+            "create_date" => "{$nowTime}"
         );
         $cid = $this->mysqlInsert("events_com_sign_up", $arrData, 'single', true);
         $res['cid'] = $cid;
@@ -31,7 +32,8 @@ class EventsModel extends AgentModel
         		'user_job'=>$v['ujob'],
         		'user_mobile'=>$v['umobile'],
         		'user_email'=>$v['uemail'],
-        		"c_date" => "{$nowTime}"
+        		"update_date" => "{$nowTime}",
+                "create_date" => "{$nowTime}"
         	);
         	$uid = $this->mysqlInsert("events_user_sign_up", $arrUser, 'single', true);
         	$res['user'][] = $uid;
@@ -54,16 +56,73 @@ class EventsModel extends AgentModel
             "user_email" => "{$pData['uemail']}",
             "user_mobile" => "{$pData['umobile']}",
             "file_name" => "{$pData['fname']}",
-            "c_date" => "{$nowTime}"
+            "update_date" => "{$nowTime}",
+            "create_date" => "{$nowTime}"
         );
         $cid = $this->mysqlInsert("events_road_show_sign_up", $arrData, 'single', true);
         $res['cid'] = $cid;
         return to_success($res);
     }
 
-    //获取会议列表-admin
-    public function getEventsList(){
+    //前台通过会议id获取会议详情
+    public function getEventsInfoById(){
         $pData = getData();
+        if(!$pData){
+            return to_error('不能获取到会议id');
+        }
+        // $sql = "SELECT * FROM events_list WHERE 1=1 events_id=1";
+        // // $res['sql'] = $sql;
+        // $res['items'] = $this->mysqlQuery($sql, "all");
+        $condition=array(
+            'eventsid'=>$pData['events_id'],
+            'events_id'=>$pData['events_id'],
+            'eventStatus'=> '1',
+        );
+        $baseData = $this->getEventsList($condition);
+        $infoData = $this->getEventsInfo($condition);
+        // var_dump($baseData);
+        // var_dump($infoData);
+        $res = array();
+        if($baseData){
+            $res['baseData'] = $baseData[0];
+            $res['infoData'] = $infoData[0];
+            //酒店详情
+            if($res['infoData']['events_hotel_id']){
+                $res['hotelData'] = $this->getHotelInfoById($res['infoData']['events_hotel_id']);
+            }
+            //演讲嘉宾详情
+            if($res['infoData']['events_hotel_id']){
+                $res['speakerData'] = $this->getHotelInfoById($res['infoData']['events_hotel_id']);
+            }
+            //组织详情
+            return to_success($res);
+        }else{
+            return to_error('该会议已下线或者不存在');
+        }
+        
+    }
+
+    //获取酒店信息
+    public function getHotelInfoById($hotel_id){
+        $sql = "SELECT * FROM events_hotel WHERE hotel_id=".$hotel_id;
+        $res = $this->mysqlQuery($sql, "all");
+        return $res[0];
+    }
+
+    //获取演讲嘉宾信息
+    public function getSpeakerInfoById($speaker_id){
+        $sql = "SELECT * FROM events_speaker WHERE speaker_id in (".$speaker_id.")";
+        $res = $this->mysqlQuery($sql, "all");
+        return $res[0];
+    }
+
+    /*###############################################
+      ################# admin #######################
+    */###############################################
+
+    //获取会议列表-admin
+    public function getEventsList($data){
+        $pData = $data ? $data : getData();
         $filter = '';
         //单条
         if($pData['eventsid']){
@@ -87,6 +146,9 @@ class EventsModel extends AgentModel
         $sql = "SELECT * FROM events_list WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
         // $res['sql'] = $sql;
         $res['items'] = $this->mysqlQuery($sql, "all");
+        if($data){
+            return $res['items'];
+        }
         return to_success($res);
     }
 
@@ -148,8 +210,8 @@ class EventsModel extends AgentModel
     }
 
     //获取会议详情-admin
-    public function getEventsInfo(){
-        $pData = getData();
+    public function getEventsInfo($data){
+        $pData = $data ? $data : getData();
         $filter = '';
         $query = '*';
         $query = $pData['query'] ? 'events_id,'.$pData['query'] : '*';
@@ -162,6 +224,9 @@ class EventsModel extends AgentModel
         $sql = "SELECT {$query} FROM events_list_detail WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
         // $res['sql'] = $sql;
         $res['items'] = $this->mysqlQuery($sql, "all");
+        if($data){
+            return $res['items'];
+        }
         return to_success($res);
     }
 
@@ -183,7 +248,7 @@ class EventsModel extends AgentModel
             $arrData = array();
             $queryArr =  explode(",",$pData['query']);
             foreach ($queryArr as $k => $v) {
-                $arrData[$v] = $pData[$v];
+                $arrData[$v] = is_array($pData[$v]) ? json_encode($pData[$v]) : $pData[$v];
             }
             return to_success($this->mysqlEdit("events_list_detail", $arrData, $filter));
         }else{

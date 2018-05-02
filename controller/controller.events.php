@@ -21,7 +21,7 @@ class EventsController extends Controller
     }
 
     /**
-     * add
+     * 会议报名
      */
     function addMSignUp()
     {
@@ -32,6 +32,12 @@ class EventsController extends Controller
     function addRSignUp()
     {
         echo $this->model->addRSignUp();
+    }
+
+    //通过会议id获取详情会议详情
+    function getEventsInfoById()
+    {
+        echo $this->model->getEventsInfoById();
     }
 
     /*
