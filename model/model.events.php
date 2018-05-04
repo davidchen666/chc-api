@@ -87,14 +87,38 @@ class EventsModel extends AgentModel
             $res['baseData'] = $baseData[0];
             $res['infoData'] = $infoData[0];
             //酒店详情
-            if($res['infoData']['events_hotel_id']){
+            if($res['infoData']['events_hotel_id'] && $pData['hotel']){
                 $res['hotelData'] = $this->getHotelInfoById($res['infoData']['events_hotel_id']);
             }
-            //演讲嘉宾详情
-            if($res['infoData']['events_hotel_id']){
-                $res['speakerData'] = $this->getHotelInfoById($res['infoData']['events_hotel_id']);
+            //演讲主讲嘉宾详情
+            if($res['infoData']['events_speaker_main'] && $pData['speaker']){
+                $res['speakerData']['events_speaker_main'] = $this->getSpeakerInfoById($res['infoData']['events_speaker_main']);
             }
-            //组织详情
+            //演讲邀请嘉宾详情
+            if($res['infoData']['events_speaker_invite'] && $pData['speaker']){
+                $res['speakerData']['events_speaker_invite'] = $this->getSpeakerInfoById($res['infoData']['events_speaker_invite']);
+            }
+            //路演项目详情
+            if($res['infoData']['events_road_id'] && $pData['roadShow']){
+                $res['roadShowData'] = $this->getRoadShowInfoById($res['infoData']['events_road_id']);
+            }
+            //组织详情——主办方
+            if($res['infoData']['events_organizer_organizer'] && $pData['organizer']){
+                $res['organizerData']['events_organizer_organizer'] = $this->getOrganizerInfoById($res['infoData']['events_organizer_organizer']);
+            }
+            //组织详情——协办方
+            if($res['infoData']['events_organizer_co_organizer'] && $pData['organizer']){
+                $res['organizerData']['events_organizer_co_organizer'] = $this->getOrganizerInfoById($res['infoData']['events_organizer_co_organizer']);
+            }
+            //组织详情——战略伙伴
+            if($res['infoData']['events_organizer_starategic_partner'] && $pData['organizer']){
+                $res['organizerData']['events_organizer_starategic_partner'] = $this->getOrganizerInfoById($res['infoData']['events_organizer_starategic_partner']);
+            }
+            //组织详情——媒体支持
+            if($res['infoData']['events_organizer_media_support'] && $pData['organizer']){
+                $res['organizerData']['events_organizer_media_support'] = $this->getOrganizerInfoById($res['infoData']['events_organizer_media_support']);
+            }
+
             return to_success($res);
         }else{
             return to_error('该会议已下线或者不存在');
@@ -103,17 +127,37 @@ class EventsModel extends AgentModel
     }
 
     //获取酒店信息
-    public function getHotelInfoById($hotel_id){
-        $sql = "SELECT * FROM events_hotel WHERE hotel_id=".$hotel_id;
+    public function getHotelInfoById($id){
+        $sql = "SELECT * FROM events_hotel WHERE hotel_id=".$id;
         $res = $this->mysqlQuery($sql, "all");
         return $res[0];
     }
 
     //获取演讲嘉宾信息
-    public function getSpeakerInfoById($speaker_id){
-        $sql = "SELECT * FROM events_speaker WHERE speaker_id in (".$speaker_id.")";
+    public function getSpeakerInfoById($id){
+        if(!is_array($id)){
+            $id = implode(",", json_decode($id));
+        }
+        $sql = "SELECT * FROM events_speaker WHERE speaker_id in (".$id.")";
+        $res = $this->mysqlQuery($sql, "all");
+        return $res;
+    }
+
+    //获取路演项目信息
+    public function getRoadShowInfoById($id){
+        $sql = "SELECT * FROM events_road_show WHERE road_id=".$id;
         $res = $this->mysqlQuery($sql, "all");
         return $res[0];
+    }
+
+    //获取组织信息
+    public function getOrganizerInfoById($id){
+        if(!is_array($id)){
+            $id = implode(",", json_decode($id));
+        }
+        $sql = "SELECT * FROM events_media WHERE media_id in (".$id.")";
+        $res = $this->mysqlQuery($sql, "all");
+        return $res;
     }
 
     /*###############################################
