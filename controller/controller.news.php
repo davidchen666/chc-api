@@ -1,16 +1,16 @@
 <?php
 /**
  * Copyright © 大猩猩
- * speaker api
+ * News api
  * Author 大猩猩
- * Create 18-05-06 11:31
+ * Create 18-04-28 11:31
  */
-class SpeakerController extends Controller
+class NewsController extends Controller
 {
     private $model;
     private $_api;
     private $title;
-    const M = "Speaker";
+    const M = "News";
     const S = "Service";
 
     function __construct()
@@ -23,37 +23,37 @@ class SpeakerController extends Controller
     ############## 后台管理接口 ################
     ###########################################
     */
-    //获取演讲嘉宾列表
-    function getSpeakerList()
+    //获取列表
+    function getNewsList()
     {
         //先验证用户的token值，后续加上
-        echo $this->model->getSpeakerList();
+        echo $this->model->getNewsList();
     }
 
-    //添加演讲嘉宾
-    function addSpeaker()
+    //添加
+    function addNews()
     {
         //先验证用户的token值，后续加上
-        echo $this->model->addSpeaker();
+        echo $this->model->addNews();
     }
 
-    //修改演讲嘉宾
-    function editSpeaker()
+    //修改
+    function editNews()
     {
         //先验证用户的token值，后续加上
-        echo $this->model->editSpeaker();
+        echo $this->model->editNews();
     }
 
-    //更改演讲嘉宾状态
-    function editSpeakerState()
+    //更改状态
+    function editNewsState()
     {
         //先验证用户的token值，后续加上
-        echo $this->model->editSpeakerState();
+        echo $this->model->editNewsState();
     }
 
     //上传图片
     public function uploadFile(){
-        echo $this->service->uploadFile('speaker');
+        echo $this->service->uploadFile('news');
     }
 }
 

@@ -1,34 +1,52 @@
 <?php
 /**
  * Copyright © 大猩猩
- * SDK中间api类
+ * speaker api
  * Author 大猩猩
- * Create 18-02-22 14:34
+ * Create 18-04-28 11:31
  */
 class AboutController extends Controller
 {
     private $model;
     private $_api;
     private $title;
-    private $data=array(
-            'title'=>'关于我们',
-            'about'=>'selected'
-        );
-    // const M = "Event
+    const M = "About";
+    const S = "Service";
+
     function __construct()
     {
-        // $this->model = Model::instance(self::M);
+        $this->model = Model::instance(self::M);
+        $this->service = Model::instance(self::S);
+    }
+    //获取
+    function getPageData()
+    {
+        echo $this->model->getPage();
+    }
+    /*
+    ###########################################
+    ############## 后台管理接口 ################
+    ###########################################
+    */
+    
+    //获取
+    function getPage()
+    {
+        //先验证用户的token值，后续加上
+        echo $this->model->getPage();
     }
 
-    /**
-     * 会议
-     */
-    function index()
+    //修改
+    function editPage()
     {
-        $data = $this->data;
-        View::instance('about/index.tpl')->show($data);
+        //先验证用户的token值，后续加上
+        echo $this->model->editPage();
     }
-    
+
+    //上传图片
+    public function uploadFile(){
+        echo $this->service->uploadFile('about');
+    }
 }
 
 ?>

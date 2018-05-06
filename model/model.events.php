@@ -7,6 +7,9 @@ class EventsModel extends AgentModel
     	if(!$pData || !$pData['uData']){
     		return to_error('缺少参数');
     	}
+        if(!$pData['events_id']){
+            return to_error('不能获取到会议id');
+        }
     	$nowTime  = NOW;
     	//添加公司信息
     	$arrData = array(
@@ -19,6 +22,7 @@ class EventsModel extends AgentModel
             "com_postal_code" => "{$pData['com_postal_code']}",
             "com_field" => "{$pData['com_field']}",
             "com_from" => "{$pData['from']}",
+            "events_id" => "{$pData['events_id']}",
             "update_date" => "{$nowTime}",
             "create_date" => "{$nowTime}"
         );
@@ -47,6 +51,9 @@ class EventsModel extends AgentModel
     	if(!$pData){
     		return to_error('缺少参数');
     	}
+        if(!$pData['events_id']){
+            return to_error('不能获取到会议id');
+        }
     	$nowTime  = NOW;
     	//添加公司信息
     	$arrData = array(
@@ -56,6 +63,7 @@ class EventsModel extends AgentModel
             "user_email" => "{$pData['uemail']}",
             "user_mobile" => "{$pData['umobile']}",
             "file_name" => "{$pData['fname']}",
+            "events_id" => "{$pData['events_id']}",
             "update_date" => "{$nowTime}",
             "create_date" => "{$nowTime}"
         );
@@ -118,6 +126,10 @@ class EventsModel extends AgentModel
             if($res['infoData']['events_organizer_media_support'] && $pData['organizer']){
                 $res['organizerData']['events_organizer_media_support'] = $this->getOrganizerInfoById($res['infoData']['events_organizer_media_support']);
             }
+            //历届会议
+            if($res['infoData']['events_past_events'] && $pData['review']){
+                $res['reviewData'] = $this->getReviewInfoById($res['infoData']['events_past_events']);
+            }
 
             return to_success($res);
         }else{
@@ -156,6 +168,16 @@ class EventsModel extends AgentModel
             $id = implode(",", json_decode($id));
         }
         $sql = "SELECT * FROM events_media WHERE media_id in (".$id.")";
+        $res = $this->mysqlQuery($sql, "all");
+        return $res;
+    }
+
+    //获取历届会议信息
+    public function getReviewInfoById($id){
+        if(!is_array($id)){
+            $id = implode(",", json_decode($id));
+        }
+        $sql = "SELECT events_id,past_title,past_pic FROM events_list WHERE events_id in (".$id.")";
         $res = $this->mysqlQuery($sql, "all");
         return $res;
     }
@@ -209,6 +231,8 @@ class EventsModel extends AgentModel
             "events_end_date" => $pData['events_end_date'],
             "events_city" => $pData['events_city'],
             "events_pic" => $pData['events_pic'],
+            "past_pic" => $pData['past_pic'],
+            "past_title" => $pData['past_title'],
             "events_menu" => json_encode($pData['events_menu']),
             "events_state" => $pData['events_state'],
             "events_remark" => $pData['events_remark'],
@@ -245,6 +269,8 @@ class EventsModel extends AgentModel
             "events_end_date" => $pData['events_end_date'],
             "events_city" => $pData['events_city'],
             "events_pic" => $pData['events_pic'],
+            "past_pic" => $pData['past_pic'],
+            "past_title" => $pData['past_title'],
             "events_menu" => json_encode($pData['events_menu']),
             "events_state" => $pData['events_state'],
             "events_remark" => $pData['events_remark'],
@@ -336,7 +362,7 @@ class EventsModel extends AgentModel
         //分页查询
         $pageFilter .= " LIMIT " . ($currentPage-1) * $pageSize . "," . $pageSize;
         $sql = "SELECT aa.com_id,aa.events_id,aa.com_name,aa.com_Invoices_title,aa.com_duty_num,aa.com_phone,aa.com_fax, aa.com_postal_addr,aa.com_postal_code,aa.com_field,aa.com_from,aa.create_date,aa.update_date, aa.pay_price,aa.pay_method,aa.invoice_state,aa.remark,
-            bb.events_name 
+            bb.events_name,bb.past_title,bb.past_title
             FROM events_com_sign_up AS aa 
             LEFT JOIN events_list AS bb
             ON aa.events_id = bb.events_id
