@@ -18,6 +18,12 @@ class NewsController extends Controller
         $this->model = Model::instance(self::M);
         $this->service = Model::instance(self::S);
     }
+
+    //获取新闻-----前台
+    function getNewsData()
+    {
+        echo $this->model->getNewsList();
+    }
     /*
     ###########################################
     ############## 后台管理接口 ################
