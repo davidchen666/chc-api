@@ -2,7 +2,6 @@
 
 class MediaModel extends AgentModel
 {
-    
     //获取媒体列表
     public function getMediaList(){
         $pData = getData();

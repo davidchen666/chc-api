@@ -39,7 +39,7 @@ define('COOKIE_TIME_OUT', 7 * 24 * 3600);
 //下拉框
 define('SELECT_HOUR', 24 * 3600);
 define('SELECT_DAY', 30 * 86400);
-define('KEY', '534b44a19bf18d20b71ecc4eb77c572f');
+// define('KEY', '534b44a19bf18d20b71ecc4eb77c572f');
 //cookie 域名
 define('COOKIE_DOMAIN', '');
 //是否开启缓存
