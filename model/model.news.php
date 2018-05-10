@@ -11,6 +11,10 @@ class NewsModel extends AgentModel
         if($pData['newsid']){
              $filter .= " AND news_id='{$pData['newsid']}' ";
         }
+        //新闻类型
+        if($pData['newstype']){
+             $filter .= " AND news_type='{$pData['newstype']}' ";
+        }
         //当前的页码
         $currentPage = $pData['currentPage'] ? (int)$pData['currentPage'] : 1;
         //每页显示的最大条数
@@ -48,6 +52,7 @@ class NewsModel extends AgentModel
             "news_auther" => $pData['news_auther'],
             "news_remark" => $pData['news_remark'],
             "news_state" => $pData['news_state'],
+            "news_type" => $pData['news_type'],
             "create_date" => NOW,
             "update_date" => NOW
         );
@@ -75,6 +80,7 @@ class NewsModel extends AgentModel
             "news_auther" => $pData['news_auther'],
             "news_remark" => $pData['news_remark'],
             "news_state" => $pData['news_state'],
+            "news_type" => $pData['news_type'],
             "update_date" => NOW
         );
         return to_success($this->mysqlEdit("news_list", $arrData, $filter));

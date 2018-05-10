@@ -139,7 +139,7 @@ class RoadShowModel extends AgentModel
         $res['page']['total'] = $this->__getRoadShowRegisterCount($filter);
         //分页查询
         $pageFilter .= " LIMIT " . ($currentPage-1) * $pageSize . "," . $pageSize;
-        $sql = "SELECT id,com_name,user_name,user_job,user_mobile,user_email,file_name,road_id remark,create_date,update_date FROM events_road_show_sign_up WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
+        $sql = "SELECT id,com_name,user_name,user_job,user_mobile,user_email,file_name,events_id ,remark,create_date,update_date FROM events_road_show_sign_up WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
         // $res['sql'] = $sql;
         $res['items'] = $this->mysqlQuery($sql, "all");
         return to_success($res);
