@@ -351,11 +351,11 @@ class EventsModel extends AgentModel
         // $filter .= 'AND media_state <> -4 ';
         //搜索条件
         if($pData['events_id']){
-            $filter .= " AND events_id='{$pData['events_id']}' ";
+            $filter .= " AND aa.events_id='{$pData['events_id']}' ";
         }
         //com_id    events_id   com_name    com_Invoices_title  com_duty_num    com_phone   com_fax com_postal_addr com_postal_code com_field   com_from    create_date
         if($pData['searchVal']){
-            $filter .= " AND (com_id like '%{$pData['searchVal']}%' OR events_id like '%{$pData['searchVal']}%' OR com_name like '%{$pData['searchVal']}%' OR com_Invoices_title like '%{$pData['searchVal']}%' OR com_phone like '%{$pData['searchVal']}%' OR com_fax like '%{$pData['searchVal']}%' OR com_postal_addr like '%{$pData['searchVal']}%' OR pay_method like '%{$pData['searchVal']}%' OR remark like '%{$pData['searchVal']}%' ) ";
+            $filter .= " AND (aa.com_id like '%{$pData['searchVal']}%' OR aa.events_id like '%{$pData['searchVal']}%' OR aa.com_name like '%{$pData['searchVal']}%' OR aa.com_Invoices_title like '%{$pData['searchVal']}%' OR aa.com_phone like '%{$pData['searchVal']}%' OR aa.com_fax like '%{$pData['searchVal']}%' OR aa.com_postal_addr like '%{$pData['searchVal']}%' OR aa.pay_method like '%{$pData['searchVal']}%' OR aa.remark like '%{$pData['searchVal']}%' ) ";
         }
         //总条数
         $res['page']['total'] = $this->__getEventsRegisterCount($filter);
