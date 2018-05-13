@@ -98,14 +98,27 @@ class EventsModel extends AgentModel
             if($res['infoData']['events_hotel_id'] && $pData['hotel']){
                 $res['hotelData'] = $this->getHotelInfoById($res['infoData']['events_hotel_id']);
             }
-            //演讲主讲嘉宾详情
-            if($res['infoData']['events_speaker_main'] && $pData['speaker']){
-                $res['speakerData']['events_speaker_main'] = $this->getSpeakerInfoById($res['infoData']['events_speaker_main']);
+            //演讲嘉宾详情---会议首页
+            if($res['infoData']['events_speaker_simple'] && $pData['speaker']){
+                $res['speakerData']['events_speaker_simple'] = $this->getSpeakerInfoById($res['infoData']['events_speaker_simple']);
             }
-            //演讲邀请嘉宾详情
-            if($res['infoData']['events_speaker_invite'] && $pData['speaker']){
-                $res['speakerData']['events_speaker_invite'] = $this->getSpeakerInfoById($res['infoData']['events_speaker_invite']);
+            //演讲嘉宾详情---会议详情页
+            if($res['infoData']['events_speaker'] && $pData['speaker']){
+                $res['infoData']['events_speaker'] = json_decode($res['infoData']['events_speaker'],true);
+                foreach ($res['infoData']['events_speaker'] as $k => $v) {
+                    $res['speakerData']['events_speaker'][$k]['speaker_type'] = $v['speaker_type'];
+                    $res['speakerData']['events_speaker'][$k]['speaker_data'] = $this->getSpeakerInfoById(json_encode($v['speaker_data']));
+                }
             }
+
+            // //演讲主讲嘉宾详情
+            // if($res['infoData']['events_speaker_main'] && $pData['speaker']){
+            //     $res['speakerData']['events_speaker_main'] = $this->getSpeakerInfoById($res['infoData']['events_speaker_main']);
+            // }
+            // //演讲邀请嘉宾详情
+            // if($res['infoData']['events_speaker_invite'] && $pData['speaker']){
+            //     $res['speakerData']['events_speaker_invite'] = $this->getSpeakerInfoById($res['infoData']['events_speaker_invite']);
+            // }
             //路演项目详情
             if($res['infoData']['events_road_id'] && $pData['roadShow']){
                 $res['roadShowData'] = $this->getRoadShowInfoById($res['infoData']['events_road_id']);
@@ -150,7 +163,7 @@ class EventsModel extends AgentModel
         if(!is_array($id)){
             $id = implode(",", json_decode($id));
         }
-        $sql = "SELECT * FROM events_speaker WHERE speaker_id in (".$id.")";
+        $sql = "SELECT * FROM events_speaker WHERE speaker_id in (".$id.") ORDER BY FIELD(speaker_id,".$id.")";
         $res = $this->mysqlQuery($sql, "all");
         return $res;
     }
@@ -177,7 +190,7 @@ class EventsModel extends AgentModel
         if(!is_array($id)){
             $id = implode(",", json_decode($id));
         }
-        $sql = "SELECT events_id,past_title,past_pic FROM events_list WHERE events_id in (".$id.")";
+        $sql = "SELECT events_id,past_title,past_pic FROM events_list WHERE events_id in (".$id.") order by events_id desc " ;
         $res = $this->mysqlQuery($sql, "all");
         return $res;
     }
@@ -263,6 +276,12 @@ class EventsModel extends AgentModel
         }else if($this->__getEventsCount(' AND '.$filter) > 1){
             return to_error('操作失败！存在多个会议id');
         }
+        if($pData['events_url'] && $pData['url']){
+            $res_c = $this->createFile($pData['events_url'],$pData['url']);
+            if(!$res_c){
+                return to_error('操作失败！自定义url创建失败');
+            }
+        }
         $arrData = array(
             "events_name" => $pData['events_name'],
             "events_begin_date" => $pData['events_begin_date'],
@@ -274,6 +293,7 @@ class EventsModel extends AgentModel
             "events_menu" => json_encode($pData['events_menu']),
             "events_state" => $pData['events_state'],
             "events_remark" => $pData['events_remark'],
+            "events_url" => $pData['events_url'],
             "update_date" => NOW
         );
         return to_success($this->mysqlEdit("events_list", $arrData, $filter));
@@ -427,8 +447,51 @@ class EventsModel extends AgentModel
     }
 
     private function __getEventsRegisterUsers($com_id){
-        $sql = "SELECT *  FROM events_user_sign_up WHERE com_id='{$com_id}' ";
+        $sql = "SELECT * FROM events_user_sign_up WHERE com_id='{$com_id}' ";
         return $this->mysqlQuery($sql, "all");
+    }
+
+    public function createFile($dirname,$url){
+        // $dirname = 'ddd';
+        // $url = 'dxx123.com';
+        if(!$dirname || !$url){
+            return false;
+        }
+        $dir = dirname(dirname(__FILE__));
+        if(strstr($dir,"/chc-api")){
+           $base_dir = str_replace("/chc-api","",$dir); 
+        }
+        if(strstr($dir,"\chc-api")){
+           $base_dir = str_replace("\chc-api","",$dir); 
+        }
+        // $base_dir = str_replace("\chc-api","",$dir);
+        //检查chc文件，查看是否存在events目录
+        if(!file_exists($base_dir."/events")){
+            $base_dir = $base_dir . "/chc";
+        }
+        $file_dir = $base_dir . "/events/".$dirname;
+        // var_dump($dir,$base_dir,$file_dir);die();
+        // var_dump($_SERVER);
+        if(!file_exists($file_dir)) { 
+            if(mkdir($file_dir,0777,true)) { 
+                // echo "创建文件夹成功"; 
+                $fp = fopen($file_dir."/index.php","w+"); 
+                fwrite($fp,'<?php Header("Location: ' . $url . '"); exit;?>'); 
+                fclose($fp); 
+                // echo "文件写入成功"; 
+                return true;
+            }else{ 
+                // echo "创建文件夹失败"; 
+                return false;
+            } 
+        } else { 
+            $fp = fopen($file_dir."/index.php","w+"); 
+            fwrite($fp,'<?php Header("Location: ' . $url . '"); exit;?>'); 
+            fclose($fp); 
+            // echo "文件写入成功";
+            return true;
+        } 
+        
     }
 
 }

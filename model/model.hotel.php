@@ -28,7 +28,7 @@ class HotelModel extends AgentModel
         $res['page']['total'] = $this->__getHotelCount($filter);
         //分页查询
         $pageFilter .= " LIMIT " . ($currentPage-1) * $pageSize . "," . $pageSize;
-        $sql = "SELECT hotel_id, hotel_name, hotel_state, hotel_info, hotel_pic, arrive_info, arrive_pic, hotel_remark, create_date, update_date FROM events_hotel WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
+        $sql = "SELECT hotel_id, hotel_name, hotel_state, hotel_info, hotel_pic, arrive_info, arrive_pic, hotel_remark,hotel_pic_rename,hotel_arrive_rename, create_date, update_date FROM events_hotel WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
         $res['sql'] = $sql;
         $res['items'] = $this->mysqlQuery($sql, "all");
         return to_success($res);
@@ -48,6 +48,8 @@ class HotelModel extends AgentModel
             "hotel_pic" => json_encode($pData['hotel_pic']),
             "arrive_info" => $pData['arrive_info'],
             "arrive_pic" => $pData['arrive_pic'],
+            "hotel_pic_rename" => $pData['hotel_pic_rename'],
+            "hotel_arrive_rename" => $pData['hotel_arrive_rename'],
             "hotel_remark" => $pData['hotel_remark'],
             "create_date" => NOW,
             "update_date" => NOW
@@ -76,6 +78,8 @@ class HotelModel extends AgentModel
             "hotel_pic" => json_encode($pData['hotel_pic']),
             "arrive_pic" => $pData['arrive_pic'],
             "arrive_info" => $pData['arrive_info'],
+            "hotel_pic_rename" => $pData['hotel_pic_rename'],
+            "hotel_arrive_rename" => $pData['hotel_arrive_rename'],
             "hotel_remark" => $pData['hotel_remark'],
             "update_date" => NOW
         );

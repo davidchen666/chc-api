@@ -28,7 +28,7 @@ class MediaModel extends AgentModel
         $res['page']['total'] = $this->__getMediaCount($filter);
         //分页查询
         $pageFilter .= " LIMIT " . ($currentPage-1) * $pageSize . "," . $pageSize;
-        $sql = "SELECT media_id, media_name, media_company, media_company_simple, media_intro, media_remark, media_pic, media_state, create_date, update_date FROM events_media WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
+        $sql = "SELECT media_id, media_name, media_company, media_company_simple, media_intro, media_remark, media_pic, media_state,media_url, create_date, update_date FROM events_media WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
         // $res['sql'] = $sql;
         $res['items'] = $this->mysqlQuery($sql, "all");
         return to_success($res);
@@ -49,6 +49,7 @@ class MediaModel extends AgentModel
             "media_remark" => $pData['media_remark'],
             "media_pic" => $pData['media_pic'],
             "media_state" => $pData['media_state'],
+            "media_url" => $pData['media_url'],
             "create_date" => NOW,
             "update_date" => NOW
         );
@@ -77,6 +78,7 @@ class MediaModel extends AgentModel
             "media_remark" => $pData['media_remark'],
             "media_pic" => $pData['media_pic'],
             "media_state" => $pData['media_state'],
+            "media_url" => $pData['media_url'],
             "update_date" => NOW
         );
         return to_success($this->mysqlEdit("events_media", $arrData, $filter));

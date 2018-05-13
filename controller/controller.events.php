@@ -104,6 +104,10 @@ class EventsController extends Controller
     public function uploadFile(){
         echo $this->service->uploadFile('events');
     }
+
+    public function createFile(){
+        echo $this->model->createFile();
+    }
 }
 
 ?>
