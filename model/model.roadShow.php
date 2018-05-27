@@ -29,7 +29,7 @@ class RoadShowModel extends AgentModel
         $res['page']['total'] = $this->__getRoadShowCount($filter);
         //分页查询
         $pageFilter .= " LIMIT " . ($currentPage-1) * $pageSize . "," . $pageSize;
-        $sql = "SELECT road_id,road_name,road_title,road_second_title,road_intro,road_target, road_guide,road_course,road_signup_intro,road_achieve,road_warn,road_remark,create_date,update_date,road_state,road_begin_date,road_end_date FROM events_road_show WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
+        $sql = "SELECT road_id,road_name,road_title,road_second_title,road_intro,road_target, road_guide,road_course,road_signup_intro,road_achieve,road_warn,road_remark,create_date,update_date,road_state,road_begin_date,road_end_date,road_target_rename,road_guide_rename,road_course_rename,road_signup_intro_rename,road_achieve_rename FROM events_road_show WHERE 1=1 {$filter} order by 1 desc {$pageFilter}";
         $res['sql'] = $sql;
         $res['items'] = $this->mysqlQuery($sql, "all");
         return to_success($res);
@@ -52,6 +52,11 @@ class RoadShowModel extends AgentModel
             "road_course" => $pData['road_course'],
             "road_signup_intro" => $pData['road_signup_intro'],
             "road_achieve" => $pData['road_achieve'],
+            "road_target_rename" => $pData['road_target_rename'],
+            "road_guide_rename" => $pData['road_guide_rename'],
+            "road_course_rename" => $pData['road_course_rename'],
+            "road_signup_intro_rename" => $pData['road_signup_intro_rename'],
+            "road_achieve_rename" => $pData['road_achieve_rename'],
             "road_begin_date" => $pData['road_begin_date'],
             "road_end_date" => $pData['road_end_date'],
             "road_warn" => $pData['road_warn'],
@@ -87,6 +92,11 @@ class RoadShowModel extends AgentModel
             "road_course" => $pData['road_course'],
             "road_signup_intro" => $pData['road_signup_intro'],
             "road_achieve" => $pData['road_achieve'],
+            "road_target_rename" => $pData['road_target_rename'],
+            "road_guide_rename" => $pData['road_guide_rename'],
+            "road_course_rename" => $pData['road_course_rename'],
+            "road_signup_intro_rename" => $pData['road_signup_intro_rename'],
+            "road_achieve_rename" => $pData['road_achieve_rename'],
             "road_begin_date" => $pData['road_begin_date'],
             "road_end_date" => $pData['road_end_date'],
             "road_warn" => $pData['road_warn'],
