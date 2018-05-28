@@ -1,6 +1,14 @@
 <?php
 class EventsModel extends AgentModel
 {
+    //获取最新会议
+    public function getLastEvents(){
+        $sql = "SELECT events_id,events_name,events_begin_date,events_end_date,events_city,past_pic
+                FROM `events_list` where events_state=1 ORDER BY events_begin_date DESC LIMIT 0, 2";
+        $res = $this->mysqlQuery($sql, "all");
+        return to_success($res);
+    }
+
     //报名
     public function addMSignUp(){
     	$pData = getData();
@@ -180,7 +188,7 @@ class EventsModel extends AgentModel
         if(!is_array($id)){
             $id = implode(",", json_decode($id));
         }
-        $sql = "SELECT * FROM events_media WHERE media_id in (".$id.")";
+        $sql = "SELECT * FROM events_media WHERE media_id in (".$id.") ORDER BY FIELD(media_id,".$id.")";
         $res = $this->mysqlQuery($sql, "all");
         return $res;
     }

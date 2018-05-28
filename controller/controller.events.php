@@ -20,6 +20,11 @@ class EventsController extends Controller
         $this->service = Model::instance(self::S);
     }
 
+    //获取最新的会议
+    function getLastEvents(){
+        echo $this->model->getLastEvents();
+    }
+
     /**
      * 会议报名
      */
