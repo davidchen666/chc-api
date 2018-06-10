@@ -198,7 +198,7 @@ class EventsModel extends AgentModel
         if(!is_array($id)){
             $id = implode(",", json_decode($id));
         }
-        $sql = "SELECT events_id,past_title,past_pic FROM events_list WHERE events_id in (".$id.") order by events_id desc " ;
+        $sql = "SELECT events_id,past_title,past_pic FROM events_list WHERE events_id in (".$id.") ORDER BY FIELD(events_id,".$id.")" ;
         $res = $this->mysqlQuery($sql, "all");
         return $res;
     }
