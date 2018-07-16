@@ -208,7 +208,7 @@ class EventsModel extends AgentModel
     */###############################################
 
     //获取会议列表-admin
-    public function getEventsList($data){
+    public function getEventsList($data=null){
         $pData = $data ? $data : getData();
         $filter = '';
         //单条
@@ -308,7 +308,7 @@ class EventsModel extends AgentModel
     }
 
     //获取会议详情-admin
-    public function getEventsInfo($data){
+    public function getEventsInfo($data=null){
         $pData = $data ? $data : getData();
         $filter = '';
         $query = '*';
