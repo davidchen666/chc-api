@@ -139,6 +139,10 @@ class EventsModel extends AgentModel
             if($res['infoData']['events_organizer_co_organizer'] && $pData['organizer']){
                 $res['organizerData']['events_organizer_co_organizer'] = $this->getOrganizerInfoById($res['infoData']['events_organizer_co_organizer']);
             }
+            //组织详情——支持单位
+            if($res['infoData']['events_organizer_supporter'] && $pData['organizer']){
+                $res['organizerData']['events_organizer_supporter'] = $this->getOrganizerInfoById($res['infoData']['events_organizer_supporter']);
+            }
             //组织详情——战略伙伴
             if($res['infoData']['events_organizer_starategic_partner'] && $pData['organizer']){
                 $res['organizerData']['events_organizer_starategic_partner'] = $this->getOrganizerInfoById($res['infoData']['events_organizer_starategic_partner']);
